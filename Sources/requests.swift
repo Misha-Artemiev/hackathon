@@ -10,9 +10,11 @@ import Vapor
 import Fluent
 import Crypto
 
-func RegisterRequest(req: Request) async throws-> Response {
+func RegisterRequest(req: Request) async throws -> Response {
     var response: Response = Response()
+    print(req.body)
     let user = try req.content.decode(User.self)
+    print(user)
     let checkUsername = try await User.query(on: req.db).filter(\.$username == user.username).first()
     if let _ = checkUsername {
         response = GenrerateResponse(dictionary: ["status": "dropped"])
@@ -27,7 +29,7 @@ func RegisterRequest(req: Request) async throws-> Response {
     return response
 }
 
-func LoginRequest(req: Request) async throws-> Response {
+func LoginRequest(req: Request) async throws -> Response {
     var response: Response = Response()
     let loginInfo = try req.content.decode(User.self)
     let loggedUser = try await User.query(on: req.db).filter(\.$username == loginInfo.username).first()
@@ -37,4 +39,15 @@ func LoginRequest(req: Request) async throws-> Response {
         response = GenrerateResponse(dictionary: ["status": "dropped"])
     }
     return response
+}
+
+func RecordRequest(req: Request) async throws -> Response {
+    let request: [String: Any] = try decodeRequest(req: req)
+    let userUUID = try await ValidateUser(username: request["username"] as! String, password: request["password"] as! String)
+    guard userUUID != nil else {
+        return GenrerateResponse(dictionary: ["status": "dropped"])
+    }
+    let userMood = UserMood(userId: userUUID!, mood: request["mood"] as! String)
+    try await userMood.save(on: app.db)
+    return GenrerateResponse(dictionary: <#T##[String : Any]#>)
 }
