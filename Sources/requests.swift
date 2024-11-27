@@ -26,3 +26,15 @@ func RegisterRequest(req: Request) async throws-> Response {
     }
     return response
 }
+
+func LoginRequest(req: Request) async throws-> Response {
+    var response: Response = Response()
+    let loginInfo = try req.content.decode(User.self)
+    let loggedUser = try await User.query(on: req.db).filter(\.$username == loginInfo.username).first()
+    if loggedUser != nil, try Bcrypt.verify(loginInfo.password, created: loggedUser!.password){
+        response = GenrerateResponse(dictionary: ["status": "approved", "token": loggedUser!.id!.uuidString])
+    } else {
+        response = GenrerateResponse(dictionary: ["status": "dropped"])
+    }
+    return response
+}

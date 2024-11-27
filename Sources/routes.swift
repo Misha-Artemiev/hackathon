@@ -8,8 +8,7 @@ func ConfigureRoutes(app: Application) {
     }
     
     app.post("login") { req in
-        print("request at /")
-        return Response(status: .ok, body: "Hello World")
+        return try await LoginRequest(req: req)
     }
     
     app.post("record") { req in
