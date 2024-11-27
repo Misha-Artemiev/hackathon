@@ -17,7 +17,10 @@ func ConfigureConnection(_ app: Application) {
         as: .psql
     )
     
-    app.migrations.add([CreateUsersTable()])
+    app.migrations.add([
+        CreateUsersTable(),
+        CreateUsersMoodTable()
+    ])
 }
 
 struct CreateUsersTable: Migration {
@@ -32,6 +35,21 @@ struct CreateUsersTable: Migration {
     
     func revert(on database: Database) -> EventLoopFuture<Void> {
         database.schema("users").delete()
+    }
+}
+
+struct CreateUsersMoodTable: Migration {
+    func prepare(on database: Database) -> EventLoopFuture<Void> {
+        database.schema("users_mood")
+            .id()
+            .field("user_id", .uuid)
+            .field("mood", .string)
+            .field("created", .datetime)
+            .create()
+    }
+    
+    func revert(on database: Database) -> EventLoopFuture<Void> {
+        database.schema("users_mood").delete()
     }
 }
 
@@ -57,5 +75,29 @@ final class User: Model, Content, @unchecked Sendable {
         self.id = id
         self.username = username
         self.password = password
+    }
+}
+
+final class UserMood: Model, Content, @unchecked Sendable {
+    
+    static let schema: String = "users_mood"
+    
+    @ID(key: .id)
+    var id: UUID?
+    
+    @Field(key: "user_id")
+    var userId: UUID
+    
+    @Field(key: "mood")
+    var mood: String
+    
+    @Timestamp(key: "created", on: .create)
+    var created: Date?
+    
+    init() {}
+    
+    init(userId: UUID, mood: String) {
+        self.userId = userId
+        self.mood = mood
     }
 }
