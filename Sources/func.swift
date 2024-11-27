@@ -19,7 +19,7 @@ func GenrerateResponse(dictionary: [String: Any]) -> Response {
 }
 
 func ValidateUser(token: UUID) async throws -> Bool {
-    guard let userAuthRecord = try await User.query(on: app.db).filter(\.$id == token).first() else {
+    guard let _ = try await User.query(on: app.db).filter(\.$id == token).first() else {
         return false
     }
     return true
