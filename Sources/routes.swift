@@ -16,7 +16,6 @@ func ConfigureRoutes(app: Application) {
     }
     
     app.post("get") { req in
-        print("request at /")
-        return Response(status: .ok, body: "Hello World")
+        return try await GetRequest(req: req)
     }
 }
