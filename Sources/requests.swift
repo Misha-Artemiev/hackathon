@@ -13,6 +13,7 @@ import Crypto
 func RegisterRequest(req: Request) async throws -> Response {
     var response: Response = Response()
     let user = try req.content.decode(User.self)
+
     let checkUsername = try await User.query(on: req.db).filter(\.$username == user.username).first()
     if let _ = checkUsername {
         response = GenrerateResponse(dictionary: ["status": "dropped"])
@@ -57,5 +58,6 @@ func GetRequest(req: Request) async throws -> Response {
         return GenrerateResponse(dictionary: ["status": "dropped"])
     }
     let userMoods = try await UserMood.query(on: app.db).filter(\.$userId == userUUID!).all()
-    return GenrerateResponse(dictionary: ["status": "approved", "moods": userMoods.map { ($0.mood, $0.created) }])
+    print(userMoods.map { ($0.mood, $0.created) })
+    return GenrerateResponse(dictionary: ["status": "approved", "moods": userMoods.map(\.mood)])
 }
