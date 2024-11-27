@@ -4,8 +4,7 @@ import Vapor
 func ConfigureRoutes(app: Application) {
     
     app.post("register") { req in
-        print("request at /")
-        return Response(status: .ok, body: "Hello World")
+        return try await RegisterRequest(req: req)
     }
     
     app.post("login") { req in
