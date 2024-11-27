@@ -2,7 +2,7 @@ import Fluent
 import FluentPostgresDriver
 import Vapor
 
-func configureConnection(_ app: Application) {
+func ConfigureConnection(_ app: Application) {
     app.databases.use(
         .postgres(
             configuration: .init(
