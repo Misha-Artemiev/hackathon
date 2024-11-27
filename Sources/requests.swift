@@ -57,5 +57,5 @@ func GetRequest(req: Request) async throws -> Response {
         return GenrerateResponse(dictionary: ["status": "dropped"])
     }
     let userMoods = try await UserMood.query(on: app.db).filter(\.$userId == userUUID!).all()
-    return GenrerateResponse(dictionary: ["status": "approved", "moods": userMoods.map(\.mood)])
+    return GenrerateResponse(dictionary: ["status": "approved", "moods": userMoods.map { ($0.mood, $0.created) }])
 }
