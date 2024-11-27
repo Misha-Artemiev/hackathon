@@ -11,6 +11,16 @@ app.http.server.configuration.port = 8075
 ConfigureConnection(app)
 try app.autoMigrate().wait()
 
+let corsConfig = CORSMiddleware(
+    configuration: .init(
+        allowedOrigin: .all,
+        allowedMethods: [.GET, .POST, .PUT, .DELETE, .OPTIONS, .PATCH],
+        allowedHeaders: [.accept, .authorization, .contentType, .origin, .xRequestedWith]
+    )
+)
+
+app.middleware.use(corsConfig)
+
 ConfigureRoutes(app: app)
 
 try app.run()
