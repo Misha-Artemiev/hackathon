@@ -43,11 +43,10 @@ func LoginRequest(req: Request) async throws -> Response {
 
 func RecordRequest(req: Request) async throws -> Response {
     let request: [String: Any] = try decodeRequest(req: req)
-    let userUUID = try await ValidateUser(username: request["username"] as! String, password: request["password"] as! String)
-    guard userUUID != nil else {
+    guard try await ValidateUser(token: request["token"] as! UUID) else {
         return GenrerateResponse(dictionary: ["status": "dropped"])
     }
-    let userMood = UserMood(userId: userUUID!, mood: request["mood"] as! String)
+    let userMood = UserMood(userId: request["token"] as! UUID, mood: request["mood"] as! String)
     try await userMood.save(on: app.db)
     return GenrerateResponse(dictionary: ["some": "data"])
 }

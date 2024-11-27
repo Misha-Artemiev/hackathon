@@ -18,13 +18,9 @@ func GenrerateResponse(dictionary: [String: Any]) -> Response {
     return Response(status: .ok, body: .init(data: try! JSONSerialization.data(withJSONObject: dictionary, options: [])))
 }
 
-func ValidateUser(username: String, password: String) async throws -> UUID? {
-    guard let userAuthRecord = try await User.query(on: app.db).filter(\.$username == username).first() else {
-        return nil
+func ValidateUser(token: UUID) async throws -> Bool {
+    guard let userAuthRecord = try await User.query(on: app.db).filter(\.$id == token).first() else {
+        return false
     }
-    if try Bcrypt.verify(password, created: userAuthRecord.password){
-        return userAuthRecord.id
-    } else {
-        return nil
-    }
+    return true
 }
