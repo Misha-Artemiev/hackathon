@@ -48,5 +48,5 @@ func RecordRequest(req: Request) async throws -> Response {
     }
     let userMood = UserMood(userId: request["token"] as! UUID, mood: request["mood"] as! String)
     try await userMood.save(on: app.db)
-    return GenrerateResponse(dictionary: ["some": "data"])
+    return GenrerateResponse(dictionary: ["status": "approved"])
 }

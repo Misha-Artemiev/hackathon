@@ -12,8 +12,7 @@ func ConfigureRoutes(app: Application) {
     }
     
     app.post("record") { req in
-        print("request at /")
-        return Response(status: .ok, body: "Hello World")
+        return try await RecordRequest(req: req)
     }
     
     app.post("get") { req in
